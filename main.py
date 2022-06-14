@@ -1,17 +1,19 @@
 import ipaddress
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import graphviz as gr
+
+
 
 
                             # PARTI FONCTION
 
-#Calcule nombre hote Pas utiliser car problème de type
+#Calcule nombre hote | Pas utiliser car problème de type
 '''def calculhote (nbr):
     nbe = nbr.num_addresses
     return nbe'''
 
-#calcule le net mask Pas utilser car problème de type
+#calcule le net mask | Pas utilser car problème de type
 '''def DecMask(ne):
     return ne.netmask'''
 
@@ -45,9 +47,38 @@ def calmaskres (nbr):
         return(18)
     elif nbr < 32768 and nbr >= 16384:
         return(17)
+    elif nbr < 65536 and nbr >= 32768:
+        return(16)
+    elif nbr < 131072 and nbr >= 65536:
+        return(15)
+    elif nbr < 262144 and nbr >= 131072:
+        return(14)
+    elif nbr < 524288 and nbr >= 262144:
+        return(13)
+    elif nbr < 1048576 and nbr >= 524288:
+        return(12)
+    elif nbr < 2097152 and nbr >= 1048576:
+        return(11)
+    elif nbr < 4194304 and nbr >= 2097152:
+        return(10)
+    elif nbr < 8388608 and nbr >= 4194304:
+        return(9)
+    elif nbr < 16777216 and nbr >= 8388608:
+        return(8)
+    elif nbr < 33554432 and nbr >= 16777216:
+        return(7)
+    elif nbr < 67108864 and nbr >= 33554432:
+        return(6)
+    elif nbr < 134217728 and nbr >= 67108864:
+        return(5)
+    elif nbr < 268435456 and nbr >= 134217728:
+        return(4)
+    elif nbr < 536870912 and nbr >= 268435456:
+        return(3)
+    elif nbr < 1073741824 and nbr >= 536870912:
+        return(2)
 
-
-#Permet d'additionner l'adresse par le nombre d'hote voulu
+#Permet d'additionner l'adresse par le nombre d'hote disponible selon le mask
 def additionreseau (address,nbrhote):
     return address+nbrhote
 
@@ -86,10 +117,36 @@ def nombrehotealloue(nn):
         return 16384
     elif nn == 17:
         return 32768
-
-
-
-
+    elif nn == 16:
+        return 65536
+    elif nn == 15:
+        return 131072
+    elif nn == 14:
+        return 262144
+    elif nn == 13:
+        return 524288
+    elif nn == 12:
+        return 1048576
+    elif nn == 11:
+        return 2097152
+    elif nn == 10:
+        return 4194304
+    elif nn == 9:
+        return 8388608
+    elif nn == 8:
+        return 16777216
+    elif nn == 7:
+        return 33554432
+    elif nn == 6:
+        return 67108864
+    elif nn == 5:
+        return 134217728
+    elif nn == 4:
+        return 268435456
+    elif nn == 3:
+        return 536870912
+    elif nn == 2:
+        return 1073741824
 
 
                             #CALCULE DE L ADDRESSE RESEAU
@@ -111,7 +168,7 @@ lstcalmaskres = []
 lstadresse = []
 lstnbrhotedispo = []
 
-
+# Boucle qui permet de repeter les fonctions selon le nombre de sous réseau voulu
 for x in range (nbrdereseau):
     print('nombre hote')
     nombrehotevoulu = int(input())
@@ -126,12 +183,14 @@ for x in range (nbrdereseau):
     print(nombrehotealloue(calmaskres(nombrehotevoulu)))
 
 
-
 #Creation du data à utiliser pour créer le tableau
 data = {'Nombre hote voulu':lstnmbhote,
         'Mask':lstcalmaskres,
         'adresse':lstadresse,
         'nombre hote dispo':lstnbrhotedispo}
+
+data2 = [lstnmbhote, lstcalmaskres, lstadresse, lstnbrhotedispo]
+
 
 
 #Creation du DATAFRAME
@@ -139,11 +198,34 @@ df = pd.DataFrame(data, columns=["Nombre hote voulu","Mask","adresse","nombre ho
 
 
 #Triage du DATAFRAME
-df.sort_values(by=["Nombre hote voulu"])
+df.sort_values(by=["Nombre hote voulu"], inplace=True)
+
+
+
 
 #MONTRER LE DATAFRAME
 print(df)
 
 #Diagramme Circulaire
-plot = df.plot.pie(y='nombre hote dispo', figsize=(5,5))
+'''plot = df.plot.pie(y='nombre hote dispo', figsize=(5,5))
+plt.show()'''
+
+lstnbrhotedispo.append(nbrmaxhote)
+lstadresse.append(adressedebase)
+plt.pie(lstnbrhotedispo, labels=lstadresse)
+plt.legend(lstnbrhotedispo)
 plt.show()
+
+
+                                #GRAPH
+dot = gr.Digraph(comment='reseaux')
+dot.node('A', str(nbrmaxhote))
+
+#Boucle qui permet de créer des sommets ainsi que les connecter a mon adresse de base
+for index, columns in df.iterrows():
+    dot.edge(str(columns["nombre hote dispo"]), str('A'), label='')
+
+#sauvegarder mon résultat dans un fichier png
+dot.format = 'png'
+dot.render('my_graph', view=False)
+
