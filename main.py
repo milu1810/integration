@@ -6,18 +6,18 @@ import graphviz as gr
 
 
 
-                            # PARTI FONCTION
+                            # FUNCTION
 
-#Calcule nombre hote | Pas utiliser car problème de type
+#CALCULATION OF NUMBER OF HOST | Pas utiliser car problème de type DIDN'T USE
 '''def calculhote (nbr):
     nbe = nbr.num_addresses
     return nbe'''
 
-#calcule le net mask | Pas utilser car problème de type
+#calcule le net mask | Pas utilser car problème de type  DIDN'T USE
 '''def DecMask(ne):
     return ne.netmask'''
 
-#calcule le net mask selon le nombre d'hote voulu
+#calcule le net mask selon le nombre d'hote voulu | CALCULATION OF THE MASK WITH THE NUMBER OF HOST THE USER WANT
 def calmaskres (nbr):
     if nbr < 3:
         return(31)
@@ -78,13 +78,23 @@ def calmaskres (nbr):
     elif nbr < 1073741824 and nbr >= 536870912:
         return(2)
 
-#Permet d'additionner l'adresse par le nombre d'hote disponible selon le mask
+#Permet d'additionner l'adresse par le nombre d'hote disponible selon le mask | ADD THE NUMBER OF HOST GIVEN BY THE MASK IN THE BASE ADDRESS
 def additionreseau (address,nbrhote):
     return address+nbrhote
 
 
-#permet de donner le nombre d'hote disponible selon le net mask
+#permet de donner le nombre d'hote disponible selon le net mask | GIVE THE NUMBER OF HOST WITH THE HELP OF MASK
 def nombrehotealloue(nn):
+    ced = 32
+    bef = 1
+    while nn != ced:
+        ced = ced-1
+        bef = bef*2
+    return bef
+
+
+#OLD FUNCTION
+'''
     if nn == 32:
         return 1
     elif nn == 31:
@@ -147,9 +157,9 @@ def nombrehotealloue(nn):
         return 536870912
     elif nn == 2:
         return 1073741824
+'''
 
-
-                            #CALCULE DE L ADDRESSE RESEAU
+                            #CALCULE DE L ADDRESSE RESEAU|CALCULATION OF THE NETWORK ADDRESS
 print('Veuillez entre l adresse')
 adressedebase = ipaddress.ip_interface(input())
 networ = adressedebase.network
@@ -162,13 +172,13 @@ adresseprovi = adressedebase
 
 
 
-#Creation des listes pour le DATA
+#Creation des listes pour le DATA | LIST FOR MY DATAFRAME LATER
 lstnmbhote = []
 lstcalmaskres = []
 lstadresse = []
 lstnbrhotedispo = []
 
-# Boucle qui permet de repeter les fonctions selon le nombre de sous réseau voulu
+# Boucle qui permet de repeter les fonctions selon le nombre de sous réseau voulu | LOOP FOR CALCULATION WITH THE NUMBER OF SUB-NETWORK THE USER WANT
 for x in range (nbrdereseau):
     print('nombre hote')
     nombrehotevoulu = int(input())
@@ -183,7 +193,7 @@ for x in range (nbrdereseau):
     print(nombrehotealloue(calmaskres(nombrehotevoulu)))
 
 
-#Creation du data à utiliser pour créer le tableau
+#Creation du data à utiliser pour créer le tableau | CREATION OF DATA FOR MY DATAFRAME
 data = {'Nombre hote voulu':lstnmbhote,
         'Mask':lstcalmaskres,
         'adresse':lstadresse,
@@ -193,20 +203,20 @@ data2 = [lstnmbhote, lstcalmaskres, lstadresse, lstnbrhotedispo]
 
 
 
-#Creation du DATAFRAME
+#Creation du DATAFRAME | CREATE THE DATAFRAME
 df = pd.DataFrame(data, columns=["Nombre hote voulu","Mask","adresse","nombre hote dispo"]).set_index("Nombre hote voulu")
 
 
-#Triage du DATAFRAME
+#Triage du DATAFRAME | SORT THE DATAFRAME
 df.sort_values(by=["Nombre hote voulu"], inplace=True)
 
 
 
 
-#MONTRER LE DATAFRAME
+#MONTRER LE DATAFRAME | SHOW THE DATAFRAME
 print(df)
 
-#Diagramme Circulaire
+#Diagramme Circulaire | PLOT PIE
 '''plot = df.plot.pie(y='nombre hote dispo', figsize=(5,5))
 plt.show()'''
 
@@ -221,11 +231,11 @@ plt.show()
 dot = gr.Digraph(comment='reseaux')
 dot.node('A', str(nbrmaxhote))
 
-#Boucle qui permet de créer des sommets ainsi que les connecter a mon adresse de base
+#Boucle qui permet de créer des sommets ainsi que les connecter a mon adresse de base | LOOP HOW CREATE THE GRAPH WITH MY NUMBER OF HOST FOR EACH SUB-NETWORK
 for index, columns in df.iterrows():
     dot.edge(str(columns["nombre hote dispo"]), str('A'), label='')
 
-#sauvegarder mon résultat dans un fichier png
+#sauvegarder mon résultat dans un fichier png | SAVING MY GRAPH IN A FILE.PNG
 dot.format = 'png'
 dot.render('my_graph', view=False)
 
