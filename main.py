@@ -8,15 +8,6 @@ import graphviz as gr
 
                             # FUNCTION
 
-#CALCULATION OF NUMBER OF HOST | Pas utiliser car problème de type DIDN'T USE
-'''def calculhote (nbr):
-    nbe = nbr.num_addresses
-    return nbe'''
-
-#calcule le net mask | Pas utilser car problème de type  DIDN'T USE
-'''def DecMask(ne):
-    return ne.netmask'''
-
 #calcule le net mask selon le nombre d'hote voulu | CALCULATION OF THE MASK WITH THE NUMBER OF HOST THE USER WANT
 def calmaskres (nbr):
     if nbr < 3:
@@ -85,79 +76,15 @@ def additionreseau (address,nbrhote):
 
 #permet de donner le nombre d'hote disponible selon le net mask | GIVE THE NUMBER OF HOST WITH THE HELP OF MASK
 def nombrehotealloue(nn):
-    ced = 32
-    bef = 1
-    while nn != ced:
-        ced = ced-1
-        bef = bef*2
-    return bef
+    netmask = 32
+    nombrehote = 1
+    while nn != netmask:
+        netmask = netmask-1
+        nombrehote = nombrehote*2
+    return nombrehote
 
 
-#OLD FUNCTION
-'''
-    if nn == 32:
-        return 1
-    elif nn == 31:
-        return 2
-    elif nn == 30:
-        return 4
-    elif nn == 29:
-        return 8
-    elif nn == 28:
-        return 16
-    elif nn == 27:
-        return 32
-    elif nn == 26:
-        return 64
-    elif nn == 25:
-        return 128
-    elif nn == 24:
-        return 256
-    elif nn == 23:
-        return 512
-    elif nn == 22:
-        return 1024
-    elif nn == 21:
-        return 2048
-    elif nn == 20:
-        return 4096
-    elif nn == 19:
-        return 8192
-    elif nn == 18:
-        return 16384
-    elif nn == 17:
-        return 32768
-    elif nn == 16:
-        return 65536
-    elif nn == 15:
-        return 131072
-    elif nn == 14:
-        return 262144
-    elif nn == 13:
-        return 524288
-    elif nn == 12:
-        return 1048576
-    elif nn == 11:
-        return 2097152
-    elif nn == 10:
-        return 4194304
-    elif nn == 9:
-        return 8388608
-    elif nn == 8:
-        return 16777216
-    elif nn == 7:
-        return 33554432
-    elif nn == 6:
-        return 67108864
-    elif nn == 5:
-        return 134217728
-    elif nn == 4:
-        return 268435456
-    elif nn == 3:
-        return 536870912
-    elif nn == 2:
-        return 1073741824
-'''
+
 
                             #CALCULE DE L ADDRESSE RESEAU|CALCULATION OF THE NETWORK ADDRESS
 print('Veuillez entre l adresse')
@@ -169,7 +96,6 @@ nbrmaxhote = networ.num_addresses
 print('Veuillez entrez le nombre de sous reseau souhaitez')
 nbrdereseau = int(input())
 adresseprovi = adressedebase
-
 
 
 #Creation des listes pour le DATA | LIST FOR MY DATAFRAME LATER
@@ -187,8 +113,10 @@ for x in range (nbrdereseau):
     lstcalmaskres.append(calmaskres(nombrehotevoulu))
     print(calmaskres(nombrehotevoulu))
     adresseprovi = additionreseau(adresseprovi,nombrehotealloue(calmaskres(nombrehotevoulu)))
-    lstadresse.append(adresseprovi)
-    print(adresseprovi)
+    adresse_ip = str(adresseprovi)
+    adresse_ip = adresse_ip[:-3]
+    lstadresse.append(adresse_ip)
+    print(adresse_ip)
     lstnbrhotedispo.append(nombrehotealloue(calmaskres(nombrehotevoulu)))
     print(nombrehotealloue(calmaskres(nombrehotevoulu)))
 
@@ -217,8 +145,6 @@ df.sort_values(by=["Nombre hote voulu"], inplace=True)
 print(df)
 
 #Diagramme Circulaire | PLOT PIE
-'''plot = df.plot.pie(y='nombre hote dispo', figsize=(5,5))
-plt.show()'''
 
 lstnbrhotedispo.append(nbrmaxhote)
 lstadresse.append(adressedebase)
