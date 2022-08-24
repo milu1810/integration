@@ -2,13 +2,15 @@ import ipaddress
 import pandas as pd
 import matplotlib.pyplot as plt
 import graphviz as gr
+import tkinter as tk
+from tkinter import filedialog, messagebox, ttk
 
+                                                   #COUCHE LOGIQUE
 
-
-
-                            # FUNCTION
+#FONCTION
 
 #calcule le net mask selon le nombre d'hote voulu | CALCULATION OF THE MASK WITH THE NUMBER OF HOST THE USER WANT
+
 def calmaskres (nbr):
     if nbr < 3:
         return(31)
@@ -70,11 +72,13 @@ def calmaskres (nbr):
         return(2)
 
 #Permet d'additionner l'adresse par le nombre d'hote disponible selon le mask | ADD THE NUMBER OF HOST GIVEN BY THE MASK IN THE BASE ADDRESS
+
 def additionreseau (address,nbrhote):
     return address+nbrhote
 
 
 #permet de donner le nombre d'hote disponible selon le net mask | GIVE THE NUMBER OF HOST WITH THE HELP OF MASK
+
 def nombrehotealloue(nn):
     netmask = 32
     nombrehote = 1
@@ -86,7 +90,8 @@ def nombrehotealloue(nn):
 
 
 
-                            #CALCULE DE L ADDRESSE RESEAU|CALCULATION OF THE NETWORK ADDRESS
+                #CALCULE DE L ADDRESSE RESEAU|CALCULATION OF THE NETWORK ADDRESS
+
 print('Veuillez entre l adresse')
 adressedebase = ipaddress.ip_interface(input())
 networ = adressedebase.network
@@ -99,29 +104,33 @@ adresseprovi = adressedebase
 
 
 #Creation des listes pour le DATA | LIST FOR MY DATAFRAME LATER
+
 lstnmbhote = []
 lstcalmaskres = []
 lstadresse = []
 lstnbrhotedispo = []
 
+
 # Boucle qui permet de repeter les fonctions selon le nombre de sous réseau voulu | LOOP FOR CALCULATION WITH THE NUMBER OF SUB-NETWORK THE USER WANT
+
 for x in range (nbrdereseau):
-    print('nombre hote')
+    #print('nombre hote')
     nombrehotevoulu = int(input())
     lstnmbhote.append(nombrehotevoulu)
-    print(nombrehotevoulu)
+    #print(nombrehotevoulu)
     lstcalmaskres.append(calmaskres(nombrehotevoulu))
-    print(calmaskres(nombrehotevoulu))
+    #print(calmaskres(nombrehotevoulu))
     adresseprovi = additionreseau(adresseprovi,nombrehotealloue(calmaskres(nombrehotevoulu)))
     adresse_ip = str(adresseprovi)
     adresse_ip = adresse_ip[:-3]
     lstadresse.append(adresse_ip)
-    print(adresse_ip)
+    #print(adresse_ip)
     lstnbrhotedispo.append(nombrehotealloue(calmaskres(nombrehotevoulu)))
-    print(nombrehotealloue(calmaskres(nombrehotevoulu)))
+    #print(nombrehotealloue(calmaskres(nombrehotevoulu)))
 
 
 #Creation du data à utiliser pour créer le tableau | CREATION OF DATA FOR MY DATAFRAME
+
 data = {'Nombre hote voulu':lstnmbhote,
         'Mask':lstcalmaskres,
         'adresse':lstadresse,
@@ -130,19 +139,15 @@ data = {'Nombre hote voulu':lstnmbhote,
 data2 = [lstnmbhote, lstcalmaskres, lstadresse, lstnbrhotedispo]
 
 
-
 #Creation du DATAFRAME | CREATE THE DATAFRAME
-df = pd.DataFrame(data, columns=["Nombre hote voulu","Mask","adresse","nombre hote dispo"]).set_index("Nombre hote voulu")
+
+Tableau = pd.DataFrame(data, columns=["Nombre hote voulu","Mask","adresse","nombre hote dispo"]).set_index("Nombre hote voulu")
 
 
 #Triage du DATAFRAME | SORT THE DATAFRAME
-df.sort_values(by=["Nombre hote voulu"], inplace=True)
 
+Tableau.sort_values(by=["Nombre hote voulu"], inplace=True)
 
-
-
-#MONTRER LE DATAFRAME | SHOW THE DATAFRAME
-print(df)
 
 #Diagramme Circulaire | PLOT PIE
 
@@ -150,18 +155,36 @@ lstnbrhotedispo.append(nbrmaxhote)
 lstadresse.append(adressedebase)
 plt.pie(lstnbrhotedispo, labels=lstadresse)
 plt.legend(lstnbrhotedispo)
-plt.show()
 
 
-                                #GRAPH
+#GRAPH
+
 dot = gr.Digraph(comment='reseaux')
 dot.node('A', str(nbrmaxhote))
 
 #Boucle qui permet de créer des sommets ainsi que les connecter a mon adresse de base | LOOP HOW CREATE THE GRAPH WITH MY NUMBER OF HOST FOR EACH SUB-NETWORK
-for index, columns in df.iterrows():
+
+for index, columns in Tableau.iterrows():
     dot.edge(str(columns["nombre hote dispo"]), str('A'), label='')
 
 #sauvegarder mon résultat dans un fichier png | SAVING MY GRAPH IN A FILE.PNG
 dot.format = 'png'
 dot.render('my_graph', view=False)
+
+
+
+
+
+                                                #COUCHE PRESENTATION
+
+#MONTRER LE DATAFRAME | SHOW THE DATAFRAME
+
+print(Tableau)
+'''#Tableau.to_csv(r'data.csv')'''  ## Sauvegarde si besoin
+
+#montrer le graph arbre
+dot.view()
+
+#montrer le graph circulaire
+plt.show()
 
